@@ -99,16 +99,18 @@ function ProjectsPage() {
           return (
             <div
               key={p.title}
-              className={`group relative bg-surface-container-lowest border border-outline-variant overflow-hidden transition-all ${accent.ring}`}
+              className={`group relative bg-surface-container-lowest border border-outline-variant overflow-hidden transition-all flex flex-col ${accent.ring}`}
             >
-              <div className="bg-surface-container-highest px-4 py-2 flex justify-between items-center border-b border-outline-variant">
-                <span className={`font-label-caps ${accent.nodeText}`}>{p.node}</span>
-                <div className="flex gap-2">
-                  <span className="material-symbols-outlined text-outline text-sm">remove</span>
-                  <span className="material-symbols-outlined text-outline text-sm">close</span>
+              <div className="bg-surface-container-highest px-4 py-2 flex justify-between items-center border-b border-outline-variant shrink-0">
+                <div className="flex items-center gap-1.5">
+                  <span className="w-2.5 h-2.5 rounded-full bg-error/60" />
+                  <span className="w-2.5 h-2.5 rounded-full bg-outline/40" />
+                  <span className={`w-2.5 h-2.5 rounded-full ${p.accent === 'primary' ? 'bg-primary-fixed/80' : 'bg-secondary-fixed/80'}`} />
                 </div>
+                <span className={`font-label-caps ${accent.nodeText} text-[10px] tracking-widest`}>{p.node}</span>
+                <span className="font-code-sm text-outline-variant text-[10px]">{p.category}</span>
               </div>
-              <div className="flex flex-col md:flex-row h-full">
+              <div className="flex flex-col md:flex-row flex-1">
                 <div className="w-full md:w-2/5 relative h-64 md:h-auto overflow-hidden border-r border-outline-variant bg-black">
                   <img
                     className="w-full h-full object-cover opacity-60 group-hover:scale-105 transition-transform duration-700"
@@ -162,18 +164,28 @@ function ProjectsPage() {
       </div>
 
       {/* Terminal listing */}
-      <div className="border border-outline-variant bg-black p-6 font-code-sm text-primary-fixed mb-4">
-        <div className="mb-2">root@sentinel-os:~/projects$ ls -la</div>
-        <div className="opacity-80 grid grid-cols-1 sm:grid-cols-2 gap-x-12">
-          <div>drwxr-xr-x  2 root root  4096 Oct 24 14:32 .</div>
-          <div>drwxr-xr-x 15 root root  4096 Oct 20 09:15 ..</div>
-          <div>-rw-r--r--  1 root root  2048 Oct 22 18:00 osint_scraper.py</div>
-          <div>-rw-r--r--  1 root root 10240 Oct 21 11:24 wifi_payload.bin</div>
-          <div>-rwxr-xr-x  1 root root  5120 Oct 23 22:10 build_all.sh</div>
+      <div className="terminal-glow bg-black overflow-hidden mb-4">
+        <div className="terminal-header-bar px-4 py-2 flex items-center justify-between">
+          <div className="flex items-center gap-1.5">
+            <span className="w-2.5 h-2.5 rounded-full bg-error/60" />
+            <span className="w-2.5 h-2.5 rounded-full bg-primary-fixed/40" />
+            <span className="w-2.5 h-2.5 rounded-full bg-primary-fixed/80" />
+          </div>
+          <span className="font-label-caps text-primary-fixed/60 text-[10px] tracking-widest">SENTINEL_OS // FILE_SYSTEM</span>
+          <span className="font-code-sm text-outline-variant text-[10px]">bash</span>
         </div>
-        <div className="mt-4">
-          root@sentinel-os:~/projects${" "}
-          <span className="inline-block w-2 h-4 bg-primary-fixed align-middle animate-pulse" />
+        <div className="p-6 font-code-sm text-primary-fixed">
+          <div className="mb-3 text-outline-variant text-[11px]">root@sentinel-os:~/projects$ <span className="text-primary-fixed">ls -la</span></div>
+          <div className="opacity-80 grid grid-cols-1 gap-y-1 text-[11px] leading-relaxed">
+            <div><span className="text-secondary-fixed">drwxr-xr-x</span>  2 root root  4096 Oct 24 14:32 <span className="text-primary-fixed font-bold">.</span></div>
+            <div><span className="text-secondary-fixed">drwxr-xr-x</span> 15 root root  4096 Oct 20 09:15 <span className="text-primary-fixed font-bold">..</span></div>
+            <div><span className="text-outline">-rw-r--r--</span>  1 root root  2048 Oct 22 18:00 <span className="text-primary-fixed">osint_scraper.py</span></div>
+            <div><span className="text-outline">-rw-r--r--</span>  1 root root 10240 Oct 21 11:24 <span className="text-primary-fixed">wifi_payload.bin</span></div>
+            <div><span className="text-primary-fixed">-rwxr-xr-x</span>  1 root root  5120 Oct 23 22:10 <span className="text-secondary-fixed">build_all.sh</span></div>
+          </div>
+          <div className="mt-4 text-outline-variant text-[11px]">
+            root@sentinel-os:~/projects$ <span className="inline-block w-2 h-3.5 bg-primary-fixed align-middle animate-pulse" />
+          </div>
         </div>
       </div>
     </SiteLayout>

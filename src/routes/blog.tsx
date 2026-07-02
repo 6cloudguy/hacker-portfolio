@@ -145,34 +145,45 @@ function BlogPage() {
 
         {/* Sidebar */}
         <div className="lg:col-span-4 space-y-6">
-          <div className="p-6 border border-outline-variant bg-surface-container-highest/30">
-            <div className="font-label-caps text-primary-fixed mb-4 flex items-center gap-2">
-              <span className="material-symbols-outlined text-sm">search</span>
-              QUERY_DATABASE
+          <div className="terminal-glow bg-black overflow-hidden">
+            <div className="terminal-header-bar px-4 py-2 flex items-center justify-between">
+              <div className="flex items-center gap-1.5">
+                <span className="w-2.5 h-2.5 rounded-full bg-error/60" />
+                <span className="w-2.5 h-2.5 rounded-full bg-primary-fixed/40" />
+                <span className="w-2.5 h-2.5 rounded-full bg-primary-fixed/80" />
+              </div>
+              <span className="font-label-caps text-primary-fixed/60 text-[10px] tracking-widest">QUERY_DATABASE</span>
+              <span className="font-code-sm text-outline-variant text-[10px]">bash</span>
             </div>
-            <div className="relative">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-primary-fixed font-code-sm">
-                $
-              </span>
-              <input
-                className="w-full bg-black border border-outline-variant text-primary-fixed font-code-sm pl-8 py-2 focus:border-primary-fixed outline-none placeholder:text-outline-variant"
-                placeholder="search_logs..."
-                type="text"
-              />
+            <div className="p-4">
+              <div className="font-code-sm text-outline-variant text-[10px] mb-2">root@sentinel:~$</div>
+              <div className="relative">
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-primary-fixed font-code-sm select-none">&gt;_</span>
+                <input
+                  className="w-full bg-surface-container-lowest border border-primary-fixed/20 text-primary-fixed font-code-sm pl-9 pr-3 py-2 focus:border-primary-fixed focus:shadow-[0_0_8px_rgba(57,255,20,0.3)] outline-none placeholder:text-outline-variant/60 transition-all"
+                  placeholder="search_logs --grep ..."
+                  type="text"
+                />
+              </div>
             </div>
           </div>
 
-          <div className="p-6 border border-outline-variant bg-black">
-            <div className="font-label-caps text-secondary-fixed mb-6 border-b border-outline-variant pb-2">
-              NODE_CATEGORIES
+          <div className="border border-outline-variant bg-black overflow-hidden">
+            <div className="px-4 py-2 border-b border-outline-variant/60 flex items-center justify-between bg-surface-container-lowest/50">
+              <span className="font-label-caps text-secondary-fixed text-[10px] tracking-widest">NODE_CATEGORIES</span>
+              <span className="font-code-sm text-outline-variant text-[10px]">[{CATEGORIES.length}]</span>
             </div>
-            <ul className="space-y-4">
+            <ul className="p-3 space-y-2">
               {CATEGORIES.map(([name, count]) => (
-                <li key={name} className="flex justify-between items-center group cursor-pointer">
-                  <span className="font-code-sm text-outline group-hover:text-on-surface transition-colors flex items-center gap-2">
-                    <span className="text-primary-fixed">-&gt;</span> {name}
+                <li
+                  key={name}
+                  className="flex justify-between items-center group cursor-pointer border border-outline-variant/30 hover:border-primary-fixed/50 bg-surface-container-lowest/30 hover:bg-primary-fixed/5 px-3 py-2.5 transition-all"
+                >
+                  <span className="font-code-sm text-outline group-hover:text-primary-fixed transition-colors flex items-center gap-2">
+                    <span className="text-primary-fixed/60 group-hover:text-primary-fixed transition-colors text-[10px] font-bold">[+]</span>
+                    {name}
                   </span>
-                  <span className="font-code-sm text-outline-variant text-[10px]">[ {count} ]</span>
+                  <span className="font-code-sm text-outline-variant group-hover:text-primary-fixed/60 text-[10px] transition-colors border border-outline-variant/40 group-hover:border-primary-fixed/30 px-1.5 py-0.5">{count}</span>
                 </li>
               ))}
             </ul>
