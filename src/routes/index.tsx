@@ -1,5 +1,5 @@
 import { createFileRoute,Link } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { SiteLayout } from "@/components/SiteLayout";
 
 export const Route = createFileRoute("/")({
@@ -29,8 +29,117 @@ const SKILLS = [
   { cat: "OTHER", items: ["Linux", "Git", "Docker", "HackTheBox"] },
 ];
 
+function accentForType(type: Cert["type"]) {
+  if (type === "Professional") return { text: "text-primary-fixed", border: "border-primary-fixed", bg: "bg-primary-fixed/10", glow: "hover:shadow-[0_0_20px_rgba(57,255,20,0.3)]", badge: "bg-primary-fixed text-black" };
+  if (type === "Certification") return { text: "text-tertiary-fixed-dim", border: "border-tertiary-fixed-dim", bg: "bg-tertiary-fixed-dim/10", glow: "hover:shadow-[0_0_20px_rgba(255,179,178,0.3)]", badge: "bg-tertiary-fixed-dim text-black" };
+  return { text: "text-secondary-fixed", border: "border-secondary-fixed", bg: "bg-secondary-fixed/10", glow: "hover:shadow-[0_0_20px_rgba(111,246,255,0.3)]", badge: "bg-secondary-fixed text-black" };
+}
+
+type Cert = {
+  id: string;
+  name: string;
+  issuer: string;
+  year: string;
+  status: "COMPLETED" | "IN_PROGRESS" | "EXPIRED";
+  type: "Certification" | "Professional" | "Course";
+  badge: string;
+  image?: string;
+};
+
+const CERTIFICATIONS: Cert[] = [
+  {
+    id: "CERT_01",
+    name: "eLearnSecurity Junior Penetration Tester",
+    issuer: "INE Security",
+    year: "2026",
+    status: "IN_PROGRESS",
+    type: "Professional",
+    badge: "eJPT",
+  },
+  {
+    id: "CERT_02",
+    name: "Diving into Cybersecurity",
+    issuer: "Coursera",
+    year: "2025",
+    status: "COMPLETED",
+    type: "Course",
+    badge: "DiC",
+    image: "/certs/DiC.png",
+  },
+  {
+    id: "CERT_03",
+    name: "OSCP",
+    issuer: "Offensive Security",
+    year: "2024",
+    status: "COMPLETED",
+    type: "Certification",
+    badge: "OSCP",
+    image: "/certs/gcyb.png",
+  },
+]
+
+function CertLightbox({ cert, onClose }: { cert: Cert; onClose: () => void }) {
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [onClose]);
+
+  return (
+    <div
+      className="fixed inset-0 z-[999] flex items-center justify-center bg-black/90 backdrop-blur-sm p-4"
+      onClick={onClose}
+    >
+      <div
+        className="relative max-w-4xl w-full max-h-[90vh] flex flex-col items-center gap-4"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Header */}
+        <div className="w-full flex items-center justify-between font-code-sm text-[11px]">
+          <span className="text-primary-fixed">{cert.id} // {cert.name}</span>
+          <button
+            onClick={onClose}
+            className="text-outline-variant hover:text-primary-fixed transition-colors border border-outline-variant hover:border-primary-fixed px-3 py-1 text-[10px] uppercase tracking-widest"
+          >
+            [ CLOSE ]
+          </button>
+        </div>
+        {/* Image */}
+        {cert.image ? (
+          <img
+            src={cert.image}
+            alt={cert.name}
+            className="max-h-[75vh] w-auto object-contain border border-outline-variant/50 shadow-[0_0_40px_rgba(57,255,20,0.15)]"
+          />
+        ) : (
+          <div className="w-full h-64 flex items-center justify-center border border-outline-variant text-outline-variant font-code-sm">
+            NO_IMAGE_AVAILABLE
+          </div>
+        )}
+        <p className="text-outline font-code-sm text-[10px]">{cert.issuer} // {cert.year} // {cert.status}</p>
+      </div>
+    </div>
+  );
+}
+
 function HomePage() {
-  const [printed, setPrinted] = useState<string[]>([]);
+  const statsRef = useRef<HTMLElement>(null);
+  const [statsVisible, setStatsVisible] = useState(false);
+  // Stats intersection observer
+  useEffect(() => {
+    const el = statsRef.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting) { setStatsVisible(true); obs.disconnect(); } },
+      { threshold: 0.3 }
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
+
+  const [activeCert, setActiveCert] = useState<Cert | null>(null);
+  const openCert = useCallback((cert: Cert) => setActiveCert(cert), []);
+  const closeCert = useCallback(() => setActiveCert(null), []);
 
   return (
     <SiteLayout>
@@ -166,6 +275,100 @@ function HomePage() {
               </span>
             ))
           )}
+        </div>
+      </section>
+
+      {/* ── CERTIFICATIONS ── */}
+      <section className="mb-20 scroll-mt-24" id="certs">
+        <div className="mb-8 border-l-4 border-tertiary-fixed-dim pl-6">
+          <div className="flex items-center gap-4 mb-1">
+            <span className="text-tertiary-fixed-dim font-code-sm">CLEARANCE REQUIRED</span>
+            <div className="h-px flex-1 bg-outline-variant" />
+          </div>
+          <h2 className="font-headline-lg-mobile md:font-headline-lg text-on-surface uppercase tracking-tighter">
+            CREDENTIALS
+          </h2>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {CERTIFICATIONS.map((cert) => {
+            const accent = accentForType(cert.type);
+
+            const statusColor =
+              cert.status === "COMPLETED"
+                ? "text-primary-fixed"
+                : cert.status === "IN_PROGRESS"
+                ? "text-secondary-fixed animate-pulse"
+                : "text-outline";
+
+            return (
+              <div
+                key={cert.id}
+                onClick={() => openCert(cert)}
+                className={`relative bg-surface-container-lowest border ${accent.border} p-6 flex flex-col gap-4 transition-all ${accent.glow} group cursor-pointer overflow-hidden`}
+              >
+                {/* Cert image overlay (shown on hover, covers card content) */}
+                {cert.image && (
+                  <div className="absolute inset-0 z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    <img
+                      src={cert.image}
+                      alt={cert.name}
+                      className="w-full h-full object-cover scale-105"
+                    />
+                    <div className="absolute inset-0 bg-black/70" />
+                    {/* Badge — top-left corner of overlay */}
+                    <div className={`absolute top-4 left-4 ${accent.badge} font-headline-md w-14 h-14 flex items-center justify-center font-bold text-sm tracking-tighter`}>
+                      {cert.badge}
+                    </div>
+                    {/* Centered CTA */}
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <span className={`font-code-sm text-[11px] uppercase tracking-widest ${accent.text} border ${accent.border} px-3 py-1.5 bg-black/60`}>
+                        [ VIEW CERT ]
+                      </span>
+                    </div>
+                  </div>
+                )}
+
+                {/* Corner ID */}
+                <span className="absolute top-3 right-3 font-code-sm text-outline-variant text-[9px] z-0">
+                  {cert.id}
+                </span>
+
+                {/* Card content (fades out on hover) */}
+                <div className={`flex flex-col gap-4 transition-opacity duration-300 ${cert.image ? "group-hover:opacity-0" : ""}`}>
+                  {/* Badge */}
+                  <div className="flex items-start gap-4">
+                    <div className={`${accent.badge} font-headline-md w-16 h-16 flex items-center justify-center shrink-0 font-bold text-sm tracking-tighter`}>
+                      {cert.badge}
+                    </div>
+                    <div className="flex flex-col justify-center gap-2">
+                      <p className={`font-label-caps ${accent.text} text-[10px] mb-1`}>
+                        {cert.issuer}
+                      </p>
+                      <p className="font-code-sm text-on-surface leading-tight">{cert.name}</p>
+                      <span className={`inline-flex items-center justify-center rounded-full px-2.5 py-1 text-[10px] font-label-caps uppercase ${accent.bg} ${accent.border} ${accent.text}`}>
+                        {cert.type}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Divider */}
+                  <div className={`h-px ${accent.bg} border-t ${accent.border} opacity-30`} />
+
+                  {/* Footer row */}
+                  <div className="flex items-center justify-between font-code-sm text-[11px]">
+                    <span className="text-outline">{cert.status === "IN_PROGRESS" ? "TARGET: " : "ISSUED: "}{cert.year}</span>
+                    <span className={`${statusColor} font-label-caps`}>
+                      {cert.status === "COMPLETED" && "● "}
+                      {cert.status === "IN_PROGRESS" && "◌ "}
+                      {cert.status === "EXPIRED" && "✕ "}
+                      {cert.status}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
         </div>
       </section>
     </SiteLayout>
