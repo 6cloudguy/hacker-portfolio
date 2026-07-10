@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute,Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { SiteLayout } from "@/components/SiteLayout";
 
@@ -14,13 +14,13 @@ export const Route = createFileRoute("/")({
   component: HomePage,
 });
 
-const WHOAMI_LINES = [
-  "[USER]: OPERATOR_01",
-  "[ROLE]: SENIOR_PENETRATION_TESTER",
-  "[STATUS]: ENCRYPTED",
-  "[LOCATION]: [REDACTED]",
+const OPERATOR_CHIPS = [
+  { label: "RED TEAM", color: "text-primary-fixed border-primary-fixed/50" },
+  // { label: "", color: "text-secondary-fixed border-secondary-fixed/50" },
+  { label: "INDIA", color: "text-tertiary-fixed-dim border-tertiary-fixed-dim/50" },
+  { label: "HTB", color: "text-primary-fixed border-primary-fixed/50" },
+  { label: "SECURITY_ENTHUSIAST", color: "text-secondary-fixed border-secondary-fixed/50" },
 ];
-
 const SKILLS = [
   { cat: "WEB", items: ["Burp Suite", "SQLMap", "FFUF", "Nuclei", "Gobuster"] },
   { cat: "NETWORK", items: ["Nmap", "Wireshark", "Metasploit", "Netcat"] },
@@ -32,47 +32,44 @@ const SKILLS = [
 function HomePage() {
   const [printed, setPrinted] = useState<string[]>([]);
 
-  useEffect(() => {
-    setPrinted([]);
-    let i = 0;
-    let timer: ReturnType<typeof setTimeout>;
-    const step = () => {
-      if (i >= WHOAMI_LINES.length) return;
-      setPrinted((p) => [...p, WHOAMI_LINES[i]]);
-      i++;
-      timer = setTimeout(step, 150 + Math.random() * 400);
-    };
-    timer = setTimeout(step, 300);
-    return () => clearTimeout(timer);
-  }, []);
-
   return (
     <SiteLayout>
-      {/* HERO TERMINAL */}
-      <section className="flex items-center justify-center min-h-[70vh] mb-20" id="home">
-        <div className="w-full max-w-3xl terminal-glow bg-black/80 rounded-lg overflow-hidden flex flex-col">
-          <div className="terminal-header-bar px-4 py-2 flex items-center justify-between">
-            <div className="flex gap-2">
-              <div className="w-3 h-3 rounded-full bg-error/50" />
-              <div className="w-3 h-3 rounded-full bg-secondary-fixed/50" />
-              <div className="w-3 h-3 rounded-full bg-primary-fixed/50" />
-            </div>
-            <span className="font-code-sm text-outline-variant uppercase text-[10px] tracking-widest">
-              session_tty1 // root@sentinel
-            </span>
-            <span className="material-symbols-outlined text-outline-variant text-sm">close</span>
+
+      {/* ── HERO ── */}
+      <section className="mb-20" id="home">
+        {/* Bold header block */}
+        <div className="mb-10 border-l-4 border-primary-fixed pl-6">
+          {/* Name */}
+          <h1
+            className="font-headline-lg-mobile md:font-headline-lg text-on-surface uppercase tracking-tighter glitch-text mb-1"
+            data-glitch="SENTINEL_OS"
+          >
+            SENTINEL_OS
+            <span className="inline-block w-3 h-7 bg-primary-fixed align-middle ml-3 animate-pulse" />
+          </h1>
+
+          {/* Identity chips */}
+          <div className="flex flex-wrap gap-2 mt-3 mb-4">
+            {OPERATOR_CHIPS.map((chip) => (
+              <span
+                key={chip.label}
+                className={`font-code-sm text-[10px] border px-2.5 py-0.5 uppercase tracking-widest ${chip.color} bg-black/40`}
+              >
+                {chip.label}
+              </span>
+            ))}
           </div>
-          <div className="p-6 font-code-sm text-primary-fixed min-h-[300px]">
-            <p className="mb-2">$ whoami</p>
-            <div className="space-y-1">
-              {printed.map((line) => (
-                <p key={line}>{line}</p>
-              ))}
-            </div>
-            <div className="flex items-center gap-1 mt-4">
-              <span>$</span>
-              <span className="w-2 h-5 bg-primary-fixed animate-pulse" />
-            </div>
+
+          <p className="text-outline font-body-md max-w-2xl">
+            CS student &amp; offensive security enthusiast — breaking things legally. CTFs, red team tooling, and IoT research.
+          </p>
+          <div className="flex flex-wrap gap-3 mt-6">
+            <Link
+              to="/projects"
+              className="relative border border-primary-fixed text-primary-fixed px-5 py-2 font-code-sm text-xs uppercase tracking-widest hover:bg-primary-fixed/10 hover:shadow-[0_0_20px_rgba(57,255,20,0.4)] hover:text-white transition-all active:scale-95 group overflow-hidden"
+            >
+              <span className="relative z-10">[ VIEW_PROJECTS ]</span>
+            </Link>
           </div>
         </div>
       </section>
