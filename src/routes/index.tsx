@@ -21,6 +21,14 @@ const WHOAMI_LINES = [
   "[LOCATION]: [REDACTED]",
 ];
 
+const SKILLS = [
+  { cat: "WEB", items: ["Burp Suite", "SQLMap", "FFUF", "Nuclei", "Gobuster"] },
+  { cat: "NETWORK", items: ["Nmap", "Wireshark", "Metasploit", "Netcat"] },
+  { cat: "SCRIPTING", items: ["Python", "Bash", "C"] },
+  { cat: "HARDWARE", items: ["Arduino", "Raspberry Pi", "UPnP/DLNA"] },
+  { cat: "OTHER", items: ["Linux", "Git", "Docker", "HackTheBox"] },
+];
+
 function HomePage() {
   const [printed, setPrinted] = useState<string[]>([]);
 
@@ -118,6 +126,49 @@ function HomePage() {
               </p>
             </div>
           </div>
+        </div>
+      </section>
+      {/* ── SKILLS / ARSENAL ── */}
+      <section className="mb-20 scroll-mt-24" id="arsenal">
+        <div className="mb-8 border-l-4 border-secondary-fixed pl-6">
+          <div className="flex items-center gap-4 mb-1">
+            <span className="text-secondary-fixed font-code-sm">TOOLS_LOADED: {SKILLS.reduce((a, s) => a + s.items.length, 0)}</span>
+            <div className="h-px flex-1 bg-outline-variant" />
+          </div>
+          <h2 className="font-headline-lg-mobile md:font-headline-lg text-on-surface uppercase tracking-tighter">
+            ARSENAL
+          </h2>
+        </div>
+
+        {/* Terminal-style skill dump */}
+        <div className="border border-outline-variant bg-black p-6 font-code-sm text-primary-fixed mb-6">
+          <p className="mb-3 text-outline-variant">root@parrot:~$ cat arsenal.conf</p>
+          <div className="space-y-4">
+            {SKILLS.map((group) => (
+              <div key={group.cat} className="flex flex-wrap gap-x-6 gap-y-1">
+                <span className="text-secondary-fixed w-24 shrink-0 uppercase">[{group.cat}]</span>
+                <span className="text-primary-fixed">{group.items.join("  //  ")}</span>
+              </div>
+            ))}
+          </div>
+          <div className="mt-4 flex items-center gap-1">
+            <span className="text-outline-variant">root@parrot:~$</span>
+            <span className="inline-block w-2 h-4 bg-primary-fixed align-middle animate-pulse ml-1" />
+          </div>
+        </div>
+
+        {/* Tag cloud */}
+        <div className="flex flex-wrap gap-2">
+          {SKILLS.flatMap((g) =>
+            g.items.map((item) => (
+              <span
+                key={item}
+                className="font-code-sm text-xs border border-outline-variant/60 bg-surface-container-lowest text-outline-variant px-3 py-1 hover:border-primary-fixed hover:text-primary-fixed transition-all cursor-default"
+              >
+                {item}
+              </span>
+            ))
+          )}
         </div>
       </section>
     </SiteLayout>
